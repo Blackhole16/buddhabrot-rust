@@ -199,17 +199,15 @@ fn render() {
     println!("start render");
     let imgbuf = ImageBuffer::from_fn(WIDTH as u32, HEIGHT as u32, |x,y| {
         let c = carr[y as usize][x as usize];
-        let mut r = rv.binary_search_by(|a: &f64| { cmp_func(a, &c.re) }).unwrap() as f64;
-        let mut g = gv.binary_search_by(|a: &f64| { cmp_func(a, &c.im) }).unwrap() as f64;
-        let mut b = bv.binary_search_by(|a: &f64| { cmp_func(a, &((iarr[y as usize][x as usize] as f64)*RDIFF-c.re)) }).unwrap() as f64;
-        r /= (WIDTH*HEIGHT) as f64;
-        g /= (WIDTH*HEIGHT) as f64;
-        b /= (WIDTH*HEIGHT) as f64;
-        let ru = (r.powi(10) * 255f64) as u8;
-        let gu = (g.powi(10) * 255f64) as u8;
-        let bu = (b.powi(10) * 255f64) as u8;
         
-        image::Rgb([ru, gu, bu])
+        fn dostuff(asdf: &[f64], uiae: f64) -> u8 {
+            (((asdf.binary_search_by(|a: &f64| { cmp_func(a, &uiae) }).unwrap() as f64)
+                / ((WIDTH*HEIGHT) as f64)).powi(10) * 255f64) as u8
+        }
+        
+        image::Rgb([dostuff(&rv, c.re),
+                    dostuff(&gv, c.im),
+                    dostuff(&bv, ((iarr[y as usize][x as usize] as f64)*RDIFF-c.re))]);
         
         //let id = i  as f64;
         //let ir = id.powf(0.25);
